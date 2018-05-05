@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+  <script src="https://code.jquery.com/color/jquery.color-2.1.2.min.js"
+          integrity="sha256-H28SdxWrZ387Ldn0qogCzFiUDDxfPiNIyJX7BECQkDE="
+          crossorigin="anonymous"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/echarts/4.1.0/echarts.min.js"></script>
+</head>
+<body>
+<div id="main" style="width: 100%; height: 800px"></div>
+<script>
+  console.log(
+    "                                     +                      \n" +
+    "                                   %$$$$$                   \n" +
+    "                                   %$$&$&                   \n" +
+    "                                  %&&$$$$$                  \n" +
+    "                                  +&&$$#$&                  \n" +
+    "                                  +&&$$#$&                  \n" +
+    "               #+%$#@@@@@#&&+     +&&$$#$&                  \n" +
+    "               &+%$#@@@@@#$+%     +&&$##$&                  \n" +
+    "               ++%$#@@@@@#$+$    *&$#@@@@#&                 \n" +
+    "               *+&$#@@@@@#$+@    *&$#@@@@#&                 \n" +
+    "               *+&$#@@@@@#$%@    *&$#@@@@#&                 \n" +
+    "               *+&$#@@@@@#$%@    *&$#@@@@#&                 \n" +
+    "               *+&$#@@@@@#$%@    *&$#@@@@#&                 \n" +
+    "               *+&$#@@@@@@$%@    *&$#@@@@#&                 \n" +
+    "               *%&$#@@@@@@$&@    *&$#@@@@#&                 \n" +
+    "               *%&$#@@@@@@#&$    *&$#@@@@#&                 \n" +
+    "               *%&$#@#@@@@#&%    *&$#*+@@#&                 \n" +
+    "               +%$$+@***@@#&%    +$%@@%$ #$*                \n" +
+    "               +%$$ @*@ @@#$+  *%&$# @@ @@#$&+              \n" +
+    "              *+&$##@@@@@@#$%  *%&$#@@@@@@@$&&              \n" +
+    "              %%&$##@@@@@@#$%  +%$$#@@@@@@@#&@              \n" +
+    "              $%&$##@@@@@@#$&  +%$$#@@@@@@@#&@              \n" +
+    "              $%&$#@@@@@@@@#&* +&$##@@@@@@@#$@              \n" +
+    "              &%&$#@@@@@@@@#&% +&$##@@@@@@@#$@              \n" +
+    "              %%&$#@@@@@@@@#&&*%&$##@@@@@@@#$@              \n" +
+    "              +%$##@@@@@@@@#$@+%&$#@@@@@@@@#$#              \n" +
+    "              +&$##@@@@@@@@#$@&%&$#@@@@@@@@#$$              \n" +
+    "              +&$#@@@@@@@@@#$@#%$##@@@@@@@@##&              \n" +
+    "              +&$#@@@@@@@@@#$@$&$##@@@@@@@@##&              \n" +
+    "JUST PAY IT:)                                                 ");
+  const myChart = echarts.init(document.getElementById('main'));
+  $.getJSON('./data/lipstick.json', data => {
+    const categories_name = ["YVES_SAINT_LAURENT", "CHANEL", "CHRISTIAN_DIOR", "GIVENCHY", "GIORGIO_ARMANI", "MAYBELLINE"];
+    const categories = [];
+    let sum = 127;
+    const nodes = [[], [], [], [], [], []];
+    let j = 0;
+    let max = 40;
+    for (let i = 0; i < data.brands.length; i++) {
+      for (let s of data.brands[i].series) {
+        categories.push(s.name);
+        let k = 0;
+        for (let lipstick of s.lipsticks) {
+          nodes[i].push({
+            name: lipstick.name + " " + lipstick.id,
+            value: [(j * 10) % sum, k],
+            symbolSize: 10,
+            itemStyle: {
+              color: lipstick.color
+            }
+          });
+          k++;
+        }
+        j++;
+      }
+    }
+
+    myChart.on('mouseover', function (params) {
+      $('body').animate({ backgroundColor: params.data.itemStyle.color }, 1500);
+    });
+
+    myChart.setOption({
+      title: {
+        text: "Lipstick"
+      },
+      legend: {
+        data: categories_name
+      },
+      polar: {},
+      tooltip: {
+        formatter: function (params) {
+          return params.name;
+        }
+      },
+      angleAxis: {
+        type: 'category',
+        data: Array.from(new Array(max), (val, index) => index + 1),
+        boundaryGap: false,
+        splitLine: {
+          show: false,
+        },
+        axisLine: {
+          show: false
+        }
+      },
+      radiusAxis: {
+        type: 'category',
+        data: categories,
+        axisLine: {
+          show: false
+        },
+        axisLabel: {
+          show: false
+        }
+      },
+      series: [{
+        name: 'YVES_SAINT_LAURENT',
+        type: 'scatter',
+        coordinateSystem: 'polar',
+        data: nodes[0],
+      },
+        {
+          name: 'CHANEL',
+          type: 'scatter',
+          coordinateSystem: 'polar',
+          data: nodes[1],
+        },
+        {
+          name: 'CHRISTIAN_DIOR',
+          type: 'scatter',
+          coordinateSystem: 'polar',
+          data: nodes[2],
+        },
+        {
+          name: 'GIVENCHY',
+          type: 'scatter',
+          coordinateSystem: 'polar',
+          data: nodes[3],
+        },
+        {
+          name: 'GIORGIO_ARMANI',
+          type: 'scatter',
+          coordinateSystem: 'polar',
+          data: nodes[4],
+        },
+        {
+          name: 'MAYBELLINE',
+          type: 'scatter',
+          coordinateSystem: 'polar',
+          data: nodes[5],
+        }
+      ]
+    })
+  });
+</script>
+</body>
+</html>
